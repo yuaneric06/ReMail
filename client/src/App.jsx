@@ -1,18 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import axios from 'axios'
 
 function App() {
-  const [array, setArray] = useState([]);
+  const [mailbox, setMailbox] = useState([]);
+  const userID = useRef([]);
 
   const fetchMail = async () => {
-    const response = await axios.get("http://localhost:8080/mail");
-    console.log("response: ", response.data);
-    setArray(response.data[0]);
-    console.log(response.data[0]);
+    console.log("fetching mail");
+    const response = await axios.get(`http://localhost:8080/mail/users/${userID.current}`);
+    setMailbox(response.data);
   };
-
-  const sendMail = async () => {
+  
+  async function handlePostMail(e) {
+    e.preventDefault();
+    
+    const form = e.target;
+    const formData = new FormData(form);
     console.log("sending mail");
     const response = await axios.post("http://localhost:8080/mail", 
       {
@@ -23,34 +27,49 @@ function App() {
         content: 'Hello, I am just testing posting mail'
       }
     );
-    console.log("response: ", response.data);
   }
-
-  useEffect(() => {
-    fetchMail();
-  }, [])
-
-  function handleSubmit(e) {
+  
+  function handleChangeUID(e) {
     e.preventDefault();
 
     const form = e.target;
     const formData = new FormData(form);
+    console.log("changing users, data: ");
     console.log(formData);
-    sendMail();
+    console.log("changing userID to ", formData.get('uidInput'));
+    const newUserID = parseInt(formData.get('uidInput'));
+    if (Number.isNaN(newUserID)) {
+      console.log("Invalid userId, input a number");
+    }
+    else {
+      userID.current = newUserID;
+      console.log("Set userId to ", newUserID);
+    }
   }
+
+  const mailElements = mailbox.map(mail => {
+    return <h1>{mail.content}</h1>;
+  })
 
   return (
     <>
-        <form className="send-mail" onSubmit={handleSubmit}>
+        <form className="send-mail" onSubmit={handlePostMail}>
           <label>
             Send mail: <input name="mailInput"/>
           </label>
           <button>Send mail</button>
         </form>
 
+        <form className="set-userID" onSubmit={handleChangeUID}>
+          <label>
+            Change userID: <input name="uidInput"/>
+          </label>
+          <button>Change UID</button>
+        </form>
 
+        <button onClick={fetchMail}>Fetch mail</button>
         <section className="display-mail">
-          
+          {mailElements}
         </section>
     </>
   )

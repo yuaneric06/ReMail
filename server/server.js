@@ -1,6 +1,4 @@
-import hidden from "/server/hidden.js"
-
-const databasePassword = hidden.databasePass;
+const hidden = require("./hidden.js")
 const express = require("express");
 const app = express();
 
@@ -8,6 +6,7 @@ const cors = require("cors");
 const corsOptions = {
     origin: ["http://localhost:5173"]
 };
+const databasePassword = hidden.default.databasePass;
 // app.use(cors(corsOptions));
 app.use(cors());
 
@@ -18,7 +17,7 @@ let pool = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "apponix",
-    password: databasePassword
+    password: `${databasePassword}`
 })
 
 module.exports = pool;
@@ -28,8 +27,10 @@ pool.connect(function(err) {
     console.log("Connected to mysql database!");
 })
 
-app.get("/mail", (req, webRes) => {
-    pool.query("SELECT * FROM remail.mail;", (err, res, fields) => {
+app.get("/mail/users/:uid", (req, webRes) => {
+    const uid = req.params.uid;
+    console.log("Requested user: ", uid);
+    pool.query(`SELECT * FROM remail.mail WHERE receiver_id = ${uid};`, (err, res, fields) => {
         if (err) throw err;
         webRes.json(res);
     })

@@ -1,0 +1,9 @@
+represent each mail as such: 
+mail = {
+    sender_id
+    receiver_id
+    date / time_sent
+
+    title
+    content
+}

@@ -7,3 +7,8 @@ mail = {
     title
     content
 }
+
+todo: 
+    create user id using useRef
+    create form to submit mail
+    send mail with dyamic parameters from frontend to backend

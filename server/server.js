@@ -1,3 +1,6 @@
+import hidden from "/server/hidden.js"
+
+const databasePassword = hidden.databasePass;
 const express = require("express");
 const app = express();
 
@@ -15,7 +18,7 @@ let pool = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "apponix",
-    password: "BlueCheese"
+    password: databasePassword
 })
 
 module.exports = pool;
@@ -23,10 +26,6 @@ module.exports = pool;
 pool.connect(function(err) {
     if (err) throw err;
     console.log("Connected to mysql database!");
-    // con.query("SELECT * FROM remail.mail;", (err, res, fields) => {
-    //     if (err) throw err;
-    //     console.log(res);
-    // });
 })
 
 app.get("/mail", (req, webRes) => {

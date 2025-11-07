@@ -2,22 +2,21 @@ DROP DATABASE IF EXISTS `ReMail`;
 CREATE DATABASE `ReMail`;
 USE `ReMail`;
 
-
 CREATE TABLE mail (
-    mail_id int NOT NULL,
-    sender_id int NOT NULL,
-    receiver_id int NOT NULL,
-    time_sent varchar(255),
-    title varchar(255),
-    content text
-    PRIMARY KEY (mail_id);
+    mail_id INT NOT NULL AUTO_INCREMENT,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    time_sent VARCHAR(255),
+    title VARCHAR(255),
+    content TEXT,
+    PRIMARY KEY (mail_id)
 );
 
 CREATE TABLE users (
-    user_id int NOT NULL AUTO_INCREMENT,
-    username varchar(50) UNIQUE NOT NULL,
-    passwd varchar(255) NOT NULL
-    PRIMARY KEY (user_id);
+    user_id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    passwd VARCHAR(255) NOT NULL,
+    PRIMARY KEY (user_id)
 );
 
 INSERT INTO mail (sender_id, receiver_id, time_sent, title, content)

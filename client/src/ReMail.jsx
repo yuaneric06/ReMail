@@ -26,9 +26,10 @@ export default function ReMail() {
         const form = e.target;
         const formData = new FormData(form);
         console.log("ReMail.jsx: sending mail");
-        const mailTitle = formData.get("mailTitle");
-        const mailContent = formData.get("mailContents");
-        const receiver_userID = Number.parseInt(formData.get("receiverUserID"));
+        const recipients = formData.get("recipients");
+        const subject = formData.get("subject");
+        const content = formData.get("content");
+        const receiver_userID = Number.parseInt(recipients);
         if (isNaN(receiver_userID)) {
             console.log("ReMail.jsx: invalid receiver userID");
             return;
@@ -39,8 +40,8 @@ export default function ReMail() {
                 sender_id: userID,
                 receiver_id: receiver_userID,
                 time_sent: '2025-11-06 14:32:10',
-                title: mailTitle,
-                content: mailContent
+                title: subject,
+                content: content
             }
         );
     }
@@ -64,7 +65,8 @@ export default function ReMail() {
 
     const renderDraft = () => {
         return (
-            <form className="draft">
+            <form className="draft" onSubmit={handlePostMail}>
+                <label className="draft-header">New Message</label>
                 <label>
                     To: <input type="text" name="recipients" />
                 </label>

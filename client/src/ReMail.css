@@ -71,4 +71,9 @@ button, h1 {
     flex-direction: column;
     border-radius: 5px;
     box-shadow: -5px -1px 10px rgb(191, 191, 191);
+    font-family: "Roboto Mono";
+}
+
+.draft-header {
+    background: rgb(223, 223, 223);
 }

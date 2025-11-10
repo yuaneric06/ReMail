@@ -22,12 +22,12 @@ let pool = mysql.createConnection({
 
 module.exports = pool;
 
-pool.connect(function(err) {
+pool.connect(function (err) {
     if (err) throw err;
     console.log("Connected to mysql database!");
 })
 
-app.get("/mail/users/:uid", (req, webRes) => {
+app.get("/users/:uid/mail", (req, webRes) => {
     const uid = req.params.uid;
     console.log("Requested user: ", uid);
     pool.query(`SELECT * FROM remail.mail WHERE receiver_id = ${uid};`, (err, res, fields) => {
@@ -35,6 +35,25 @@ app.get("/mail/users/:uid", (req, webRes) => {
         webRes.json(res);
     })
 });
+
+app.get("/users/:uid", (req, webRes) => {
+    const uid = req.params.uid;
+    console.log("requesting username from ", uid);
+    pool.query(`SELECT username FROM remail.users WHERE user_id = ${uid};`, (err, res, fields) => {
+        if (err) throw err;
+        webRes.json(res);
+    })
+});
+
+app.get("/mail/:id", (req, webRes) => {
+    const id = req.params.id;
+    pool.query(`SELECT users.username, mail.receiver_id, mail.time_sent, mail.title, mail.content FROM remail.mail 
+        INNER JOIN remail.users ON mail.sender_id = users.user_id
+        WHERE mail.id = ${id};`, (err, res, fields) => {
+            if (err) throw err;
+            webRes.json(res);
+        })
+})
 
 app.post("/mail", (req, webRes) => {
     console.log("Received post request at /mail, inserting into ReMail.mail: ", req.body);

@@ -27,6 +27,10 @@ pool.connect(function (err) {
     console.log("Connected to mysql database!");
 })
 
+/**
+ * /users/:uid/mail
+ * returns all mail sent to specified user
+ */
 app.get("/users/:uid/mail", (req, webRes) => {
     const uid = req.params.uid;
     console.log("Requested user: ", uid);
@@ -36,15 +40,33 @@ app.get("/users/:uid/mail", (req, webRes) => {
     })
 });
 
+/**
+ * /users/:uid
+ * returns username for userID
+ */
 app.get("/users/:uid", (req, webRes) => {
-    const uid = req.params.uid;
+    const uid = Number.parseInt(req.params.uid);
     console.log("requesting username from ", uid);
-    pool.query(`SELECT username FROM remail.users WHERE user_id = ${uid};`, (err, res, fields) => {
-        if (err) throw err;
-        webRes.json(res);
-    })
+    if (isNaN(uid)) {
+        console.log("requesting type: username");
+        pool.query(`SELECT user_id FROM remail.users WHERE username = '${req.params.uid}';`, (err, res, fields) => {
+            if (err) throw err;
+            webRes.json(res);
+        })
+    }
+    else {
+        console.log("requesting type: uid");
+        pool.query(`SELECT username FROM remail.users WHERE user_id = ${uid};`, (err, res, fields) => {
+            if (err) throw err;
+            webRes.json(res);
+        })
+    }
 });
 
+/**
+ * /mail/:id
+ * returns mail entry for specified mail ID
+ */
 app.get("/mail/:id", (req, webRes) => {
     const id = req.params.id;
     pool.query(`SELECT users.username, mail.receiver_id, mail.time_sent, mail.title, mail.content FROM remail.mail 
@@ -55,8 +77,11 @@ app.get("/mail/:id", (req, webRes) => {
         })
 })
 
+/**
+ * /mail
+ * inserts mail row into remail.mail
+ */
 app.post("/mail", (req, webRes) => {
-    console.log("Received post request at /mail, inserting into ReMail.mail: ", req.body);
     const mail = req.body;
     pool.query(`INSERT INTO remail.mail (sender_id, receiver_id, time_sent, title, content) 
         VALUES (${mail.sender_id}, 

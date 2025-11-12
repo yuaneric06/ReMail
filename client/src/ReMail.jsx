@@ -16,23 +16,30 @@ export default function ReMail() {
         if (userID > 0) fetchMail();
     }, [userID]);
 
-    console.log("rerender");
-    console.log("mailbox: ");
-    console.log(mailbox);
-
     async function handlePostMail(e) {
         e.preventDefault();
+        const lookupUser = await axios.get(`http://localhost:8080/users/${userID}`);
+        if (lookupUser.data.length === 0) {
+            console.log("invalid sender id");
+            return;
+        }
 
         const form = e.target;
         const formData = new FormData(form);
-        console.log("ReMail.jsx: sending mail");
+        console.log("sending mail");
         const recipients = formData.get("recipients");
         const subject = formData.get("subject");
         const content = formData.get("content");
-        const receiver_userID = Number.parseInt(recipients);
+        let receiver_userID = Number.parseInt(recipients);
         if (isNaN(receiver_userID)) {
-            console.log("ReMail.jsx: invalid receiver userID");
-            return;
+            const response = await axios.get(`http://localhost:8080/users/${recipients}`);
+            if (response.data.length === 0) {
+                console.log("invalid receiver userID");
+                return;
+            }
+            else {
+                receiver_userID = response.data[0].user_id;
+            }
         }
 
         const response = await axios.post("http://localhost:8080/mail",
@@ -51,14 +58,13 @@ export default function ReMail() {
 
         const form = e.target;
         const formData = new FormData(form);
-        console.log(formData);
         const newUserID = parseInt(formData.get('getUserID'));
         if (Number.isNaN(newUserID)) {
-            console.log("ReMail.jsx: Invalid userId, input a number");
+            console.log("invalid userId, input a number");
         }
         else {
             setUserID(newUserID);
-            console.log("ReMail.jsx: Set userId to ", newUserID);
+            console.log("set userId to ", newUserID);
         }
         // fetchMail();
     }
@@ -88,8 +94,6 @@ export default function ReMail() {
             time_sent: "2025-11-06 14:32:10"
             title: "Hey Bob!"
          */
-        console.log("mail element data: ");
-        console.log(data);
         const mail_id = data.id;
         return <MailEntry key={mail_id} id={mail_id} />
     })
@@ -102,7 +106,7 @@ export default function ReMail() {
                 <h1>ReMail</h1>
 
                 <form>
-                    <input type="text" placeholder="Search" />
+                    <input type="text" placeholder="From" />
                     <button>Search mail</button>
                 </form>
 

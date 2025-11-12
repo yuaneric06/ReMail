@@ -16,6 +16,38 @@ export default function ReMail() {
         if (userID > 0) fetchMail();
     }, [userID]);
 
+    async function handleSearchMail(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const sender = formData.get("from");
+        let from_userID = Number.parseInt(sender);
+        if (isNaN(from_userID)) {
+            const response = await axios.get(`http://localhost:8080/users/${sender}`);
+            if (response.data.length === 0) {
+                console.log("invalid from userID");
+                return;
+            }
+            else {
+                from_userID = response.data[0].user_id;
+            }
+        }
+
+        // lookup mail from from_userID
+        const response = await axios.get(`http://localhost:8080/mail`, 
+            {
+                params: {
+                    senderID: from_userID,
+                    receiverID: userID
+                }
+            }
+        );
+        console.log("response from search: ");
+        console.log(response);
+        setMailbox(response.data);
+    }
+
     async function handlePostMail(e) {
         e.preventDefault();
         const lookupUser = await axios.get(`http://localhost:8080/users/${userID}`);
@@ -105,8 +137,8 @@ export default function ReMail() {
                 <img src="../media/gmail-logo.png" alt="gmail logo" />
                 <h1>ReMail</h1>
 
-                <form>
-                    <input type="text" placeholder="From" />
+                <form onSubmit={handleSearchMail}>
+                    <input type="text" name="from" placeholder="From" />
                     <button>Search mail</button>
                 </form>
 
@@ -118,8 +150,8 @@ export default function ReMail() {
 
             <main className="main-body">
                 <section className="main-screen-sidebar">
-                    <button 
-                        onClick={() => {if (!showDraft) setShowDraft(true)}}>
+                    <button
+                        onClick={() => { if (!showDraft) setShowDraft(true) }}>
                         Compose mail</button>
                 </section>
 

@@ -41,8 +41,23 @@ app.get("/users/:uid/mail", (req, webRes) => {
 });
 
 /**
+ * /mail, takes in {receiverID, senderID}
+ */
+app.get("/mail", (req, webRes) => {
+    console.log(req);
+    const {receiverID, senderID} = req.query;
+    console.log("querying mail with ruid: ", receiverID, " suid: ", senderID);
+    pool.query(`SELECT id FROM remail.mail WHERE sender_id = ${senderID} AND receiver_id = ${receiverID};`, (err, res, fields) => {
+        if (err) throw err;
+        webRes.json(res);
+    })
+})
+
+
+/**
  * /users/:uid
- * returns username for userID
+ * returns username for userID if inputted uid
+ * returns uid for username if inputted username
  */
 app.get("/users/:uid", (req, webRes) => {
     const uid = Number.parseInt(req.params.uid);

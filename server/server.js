@@ -18,14 +18,14 @@ let pool = mysql.createConnection({
     port: 3306,
     user: "apponix",
     password: `${databasePassword}`
-})
+});
 
 module.exports = pool;
 
 pool.connect(function (err) {
     if (err) throw err;
     console.log("Connected to mysql database!");
-})
+});
 
 /**
  * /users/:uid/mail
@@ -51,7 +51,7 @@ app.get("/mail", (req, webRes) => {
         if (err) throw err;
         webRes.json(res);
     })
-})
+});
 
 
 /**
@@ -90,7 +90,7 @@ app.get("/mail/:id", (req, webRes) => {
             if (err) throw err;
             webRes.json(res);
         })
-})
+});
 
 /**
  * /mail
@@ -108,7 +108,18 @@ app.post("/mail", (req, webRes) => {
             if (err) throw err;
             webRes.json(res);
         })
-})
+});
+
+app.post("/register", (req, webRes) => {
+    const { username, password } = req.body.params;
+    console.log("received params: ");
+    console.log(req.body);
+    console.log("username, password: ", username, " ", password);
+    pool.query(`INSERT INTO remail.users (username, passwd) VALUES ('${username}', '${password}');`, (res, err, fields) => {
+        if (err) throw err;
+        webRes.json(res);
+    })
+});
 
 app.listen(8080, () => {
     console.log("Server started on port 8080");

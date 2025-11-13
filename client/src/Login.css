@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+}
+
+.login-screen-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    margin: 30px 30px 0;
+}
+
+.login-screen-header > img {
+    height: 50px;
+    width: auto;
+}
+
+.login-screen-header > h1 {
+    color: gray;
+}
+
+.input {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: "Roboto Mono";
+    gap: 20px;
+}

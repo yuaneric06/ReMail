@@ -121,6 +121,15 @@ app.post("/register", (req, webRes) => {
     })
 });
 
+app.post("/login", (req, webRes) => {
+    const { username, password } = req.body;
+    console.log("logging in, username, password: ", username, " ", password);
+    pool.query(`SELECT user_id FROM remail.users WHERE username="${username}" AND passwd="${password}";`, (res, err, fields) => {
+        if (err) throw err;
+        webRes.json(res);
+    })
+})
+
 app.listen(8080, () => {
     console.log("Server started on port 8080");
 });
